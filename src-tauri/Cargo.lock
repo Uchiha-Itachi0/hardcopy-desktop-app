@@ -1145,6 +1145,7 @@ dependencies = [
 name = "hardcopy_desktop_app"
 version = "0.0.0"
 dependencies = [
+ "base64 0.22.1",
  "reqwest",
  "serde",
  "serde_json",
