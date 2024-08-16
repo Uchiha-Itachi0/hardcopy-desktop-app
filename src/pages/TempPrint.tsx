@@ -39,7 +39,7 @@ const TempPrint: React.FC = () => {
         try {
 
             console.log(selectedPrinterId)
-            const filePath = 'C:\\Users\\Anubhav Shukla\\Desktop\\HardCopy\\hardcopy_desktop_app\\src\\utils\\College_fees_last_year.pdf';
+            const filePath = 'C:\\Users\\anand\\OneDrive\\Desktop\\subsequent-declaration-doc.pdf';
             const fileData = await readBinaryFile(filePath);  // Read file as Uint8Array
             const bufferData = Buffer.from(fileData);  // Convert Uint8Array to Buffer
 
