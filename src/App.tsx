@@ -7,7 +7,7 @@ const App: React.FC = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<TempPrint />} />
+                <Route path="/" element={<LoginScreen />} />
             </Routes>
         </Router>
     );
