@@ -24,6 +24,11 @@ thiserror = "1.0.63"
 libc = "0.2"
 winapi = { version = "0.3", features = ["winuser", "winspool", "shellapi", "minwindef"] }
 tauri-plugin-printer = { version = "1.0.10" }
+dotenv = "0.15.0"
+aes-gcm = "0.10" #
+aes-gcm-siv = "0.11.1"
+rand = "0.8"
+
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

@@ -1,8 +1,10 @@
 import React from "react";
 import validateMobileNumber from "../utils/ValidateMobileNumber.ts";
-import {LoginErrorResponseInterface, LoginResponseInterface, OTPResponseInterface} from "../utils/Types.ts";
+import { OTPResponseInterface } from "../utils/Types.ts";
 import { invoke } from "@tauri-apps/api";
 import Snackbar from "../components/Snackbar.tsx";
+import {useAuth} from "../hooks/useAuth.tsx";
+import {useNavigate} from "react-router-dom";
 
 
 interface SnackbarModel {
@@ -17,6 +19,10 @@ const defaultSnackbar: SnackbarModel = {
 
 
 const LoginScreen: React.FC = () => {
+
+    const navigate = useNavigate();
+
+
     const [mobileNumber, setMobileNumber] = React.useState<string>('');
     const [otp, setOtp] = React.useState<string>('')
     const [showOtp, setShowOtp] = React.useState<boolean>(false);
@@ -24,6 +30,7 @@ const LoginScreen: React.FC = () => {
     const [loading, setLoading] = React.useState<boolean>(false);
     const [isValidMobileNumber, setIsValidMobileNumber] = React.useState<boolean>(true);
     const [snackbar, setSnackbar] = React.useState<SnackbarModel>(defaultSnackbar);
+    const { login } = useAuth();
 
     const handleMobileNumberChange = (mobileNumber: string): void => {
         setMobileNumber(mobileNumber);
@@ -71,9 +78,11 @@ const LoginScreen: React.FC = () => {
             return
         }
         try {
-            const response: LoginResponseInterface | LoginErrorResponseInterface = await invoke('handle_login_command', {mobileNumber, otp})
-            message = response.message
-            console.log(message);
+            const success = await login(mobileNumber, otp);
+            message = success ? "Login successful!" : "Login failed. Please try again.";
+            if (success){
+                navigate('/content')
+            }
         }
         catch (error: any) {
             console.log("This is the error", error);

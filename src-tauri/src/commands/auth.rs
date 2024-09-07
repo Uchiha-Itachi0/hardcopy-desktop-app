@@ -1,8 +1,10 @@
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
-use tauri::http::Response;
 use crate::utils::base_url::BASE_URL;
+use std::fs;
+use std::path::PathBuf;
+use tauri::api::path::app_data_dir;
 
 /// Data model for the OTP request.
 #[derive(Serialize)]
@@ -42,6 +44,50 @@ pub struct LoginData {
 pub struct LoginErrorResponseModel {
     message: String,
     success: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct StoredToken {
+    token: String,
+    store_id: String,
+}
+
+pub fn get_token_file_path(app_handle: &tauri::AppHandle) -> PathBuf {
+    let app_data_dir = app_data_dir(&app_handle.config()).expect("Failed to get app data directory");
+    app_data_dir.join("user_session.json")
+}
+
+/// Save token and store_id to a file.
+pub fn save_token(app_handle: &tauri::AppHandle, token: &str, store_id: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let token_data = StoredToken {
+        token: token.to_string(),
+        store_id: store_id.to_string(),
+    };
+
+    // Convert token data to JSON.
+    let token_json = serde_json::to_string(&token_data)?;
+
+    // Get file path for token storage.
+    let file_path = get_token_file_path(app_handle);
+
+    // Get the directory path and create it if it doesn't exist.
+    if let Some(parent_dir) = file_path.parent() {
+        if !parent_dir.exists() {
+            fs::create_dir_all(parent_dir)?; // Create directory if it doesn't exist.
+        }
+    }
+
+    // Write the token JSON data to the file.
+    fs::write(file_path, token_json)?;
+
+    Ok(())
+}
+
+pub fn load_token(app_handle: &tauri::AppHandle) -> Option<StoredToken> {
+    let file_path = get_token_file_path(app_handle);
+    fs::read_to_string(file_path)
+        .ok()
+        .and_then(|token_json| serde_json::from_str::<StoredToken>(&token_json).ok())
 }
 
 /// Sends an OTP request to the server.
@@ -165,14 +211,30 @@ pub async fn request_otp_command(mobile_number: String) -> Result<OTPResponseMod
 ///
 /// * A result containing either a `LoginSuccessResponseModel` or a `LoginErrorResponseModel`.
 #[tauri::command]
-pub async fn handle_login_command(mobile_number: String, otp: String) -> Result<LoginSuccessResponseModel, LoginErrorResponseModel> {
+pub async fn handle_login_command(app_handle: tauri::AppHandle, mobile_number: String, otp: String) -> Result<LoginSuccessResponseModel, LoginErrorResponseModel> {
     let login_request_data = LoginRequestModel {
         mobileNumber: format!("+91{}", mobile_number),
         otp,
     };
 
     match handle_login(login_request_data).await {
-        Ok(response) => Ok(response),
+        Ok(response) => {
+            if let Err(e) = save_token(&app_handle, &response.data.token, &response.data.storeId) {
+                eprintln!("Failed to save token: {}", e);
+            }
+            Ok(response)
+        },
         Err(error) => Err(error),
     }
+}
+
+#[tauri::command]
+pub fn check_stored_session(app_handle: tauri::AppHandle) -> Option<StoredToken> {
+    load_token(&app_handle)
+}
+
+#[tauri::command]
+pub fn logout(app_handle: tauri::AppHandle) -> Result<(), String> {
+    let file_path = get_token_file_path(&app_handle);
+    fs::remove_file(file_path).map_err(|e| e.to_string())
 }
