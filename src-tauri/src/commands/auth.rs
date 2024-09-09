@@ -48,8 +48,8 @@ pub struct LoginErrorResponseModel {
 
 #[derive(Serialize, Deserialize)]
 pub struct StoredToken {
-    token: String,
-    store_id: String,
+    pub(crate) token: String,
+    pub(crate) store_id: String,
 }
 
 pub fn get_token_file_path(app_handle: &tauri::AppHandle) -> PathBuf {

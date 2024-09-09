@@ -1,10 +1,12 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { checkStoredSession as checkStoredSessionService, login as loginService, logout as logoutService } from '../services/authService';
+import {LoginErrorResponseInterface, LoginResponseInterface} from "../utils/Types.ts";
+import {commonErrorMessage} from "../utils/const.ts";
 
 interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
-    login: (mobileNumber: string, otp: string) => Promise<boolean>;
+    login: (mobileNumber: string, otp: string) => Promise<LoginResponseInterface | LoginErrorResponseInterface>;
     logout: () => Promise<void>;
 }
 
@@ -13,6 +15,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 interface AuthProviderProps {
     children: ReactNode;
 }
+
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -35,17 +38,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
-    const login = async (mobileNumber: string, otp: string): Promise<boolean> => {
+    const login = async (mobileNumber: string, otp: string): Promise<LoginResponseInterface | LoginErrorResponseInterface> => {
         try {
-            const response = await loginService(mobileNumber, otp);
+            const response: LoginResponseInterface = await loginService(mobileNumber, otp);
             if (response.success) {
                 setIsAuthenticated(true);
-                return true;
+                return response;
             }
-            return false;
+            return commonErrorMessage;
         } catch (error) {
             console.error('Login failed:', error);
-            return false;
+            return commonErrorMessage;
         }
     };
 

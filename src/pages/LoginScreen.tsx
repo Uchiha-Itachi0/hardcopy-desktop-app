@@ -1,6 +1,6 @@
 import React from "react";
 import validateMobileNumber from "../utils/ValidateMobileNumber.ts";
-import { OTPResponseInterface } from "../utils/Types.ts";
+import {LoginErrorResponseInterface, LoginResponseInterface, OTPResponseInterface} from "../utils/Types.ts";
 import { invoke } from "@tauri-apps/api";
 import Snackbar from "../components/Snackbar.tsx";
 import {useAuth} from "../hooks/useAuth.tsx";
@@ -78,10 +78,13 @@ const LoginScreen: React.FC = () => {
             return
         }
         try {
-            const success = await login(mobileNumber, otp);
-            message = success ? "Login successful!" : "Login failed. Please try again.";
-            if (success){
+            const response: LoginResponseInterface | LoginErrorResponseInterface = await login(mobileNumber, otp);
+            message = response.success ? "Login successful!" : "Login failed. Please try again.";
+            if (response.success){
                 navigate('/content')
+                if ("data" in response) {
+                    localStorage.setItem('storeId', response.data.storeId)
+                }
             }
         }
         catch (error: any) {

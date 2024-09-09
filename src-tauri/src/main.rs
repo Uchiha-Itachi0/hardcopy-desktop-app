@@ -18,6 +18,7 @@ fn main() {
             commands::auth::handle_login_command,
             commands::auth::check_stored_session,
             commands::auth::logout,
+            commands::store::get_stores_command,
         ])
         .plugin(tauri_plugin_printer::init())
         .run(tauri::generate_context!())

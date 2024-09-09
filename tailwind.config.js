@@ -12,6 +12,8 @@ module.exports = {
         "secondary-green": "#17303D",
         "secondary-light-green-1": "#9DFACD",
         "secondary-light-green-2": "#279292",
+        'shimmer-dark': '#f0f0f0',
+        'shimmer-light': '#e0e0e0',
       }
     },
   },

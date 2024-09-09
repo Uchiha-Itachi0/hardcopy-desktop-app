@@ -1,3 +1,9 @@
+
+export interface CommonErrorResponse {
+    message: string,
+    success: boolean
+}
+
 export interface OTPRequestInterface {
     mobileNumber: string,
 }
@@ -22,4 +28,29 @@ export interface LoginErrorResponseInterface {
     message: string;
     success: boolean;
 }
+export interface OrderInterface {
+    id: number;
+    orderStatus: string;
+    fileNames: string[];
+    localDateTime: string;
+    orderAmount: number;
+    userId: string;
+    userName: string;
+}
+
+export interface GetStoreRequestInterface {
+    storeId: string;
+    pageNumber: number;
+}
+
+export interface GetOrdersResponseInterface {
+    orders: OrderInterface[];
+}
+
+export interface GetOrdersErrorInterface {
+    message: string;
+    success: boolean;
+}
+
+
 
