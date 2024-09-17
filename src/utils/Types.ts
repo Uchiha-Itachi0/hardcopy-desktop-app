@@ -52,5 +52,21 @@ export interface GetOrdersErrorInterface {
     success: boolean;
 }
 
+interface FileInterface {
+    fileName: string,
+    fileType: string,
+    color: string,
+    startPage: string,
+    endPage: string,
+    numberOfCopies: number
+}
+export interface GetFilesResponseModel {
+    files: FileInterface[],
+    unableToFetch: string[]
+}
+
+export interface GetFilesRequestModel {
+    id: string[]
+}
 
 

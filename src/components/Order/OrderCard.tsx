@@ -1,4 +1,5 @@
 import React from "react";
+import {useNavigate} from "react-router-dom";
 
 interface TextProps {
     label: string;
@@ -6,6 +7,7 @@ interface TextProps {
 }
 
 interface OrderCardProps {
+    fileIds?: string[];
     totalFiles?: number;
     amount?: number;
     name?: string;
@@ -18,15 +20,27 @@ const Text: React.FC<TextProps> = ({label, isValue = false}) => (
 )
 
 const OrderCard: React.FC<OrderCardProps> = ({
+    fileIds,
     totalFiles = 1,
     amount = 20,
     name = "Radha",
     mobileNumber = "+919628511247",
     dateTime = "April 20, 2024 at 12:00AM"
                                              }) => {
+
+
+    const navigate = useNavigate();
+
+    const handleOrderFolderClicked = () => {
+        if(fileIds){
+            localStorage.setItem('files', JSON.stringify(fileIds));
+        }
+        navigate('/files');
+    }
     return (
         <>
-        <div className="relative border border-black shadow-md w-[40vw] cursor-pointer p-6 rounded-xl">
+        <div className="relative border border-black shadow-md w-[40vw] cursor-pointer p-6 rounded-xl"
+        onClick={() => handleOrderFolderClicked()}>
             <div className="absolute -top-3 right-4 bg-white text-[1vw] mb-4"><span>{dateTime}</span></div>
             <div className="flex gap-4 justify-between">
                 <div className="flex flex-col gap-6 justify-end">

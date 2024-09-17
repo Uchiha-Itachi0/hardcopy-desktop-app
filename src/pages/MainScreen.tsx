@@ -7,7 +7,7 @@ import {
 import {getStores} from "../services/storeService.tsx";
 import OrderCard from "../components/Order/OrderCard.tsx";
 import {dateTimeFormatter} from "../utils/DateTimeFormatter.ts";
-import OrderShimmer from "../components/Order/OrderShimmer.tsx";
+import Shimmer from "../components/Order/Shimmer.tsx";
 
 interface MenuItemProps {
     label: string;
@@ -62,7 +62,6 @@ const MainScreen: React.FC = () => {
         try {
             const fetchedOrders: OrderInterface[] | GetOrdersErrorInterface = await getStores(storeId, 0);
             if (isOrderArray(fetchedOrders)) {
-                console.log(fetchedOrders);
                 setOrders(fetchedOrders); // Set orders only if the response is correct
             } else {
                 console.error(fetchedOrders.message); // Handle error response
@@ -103,6 +102,7 @@ const MainScreen: React.FC = () => {
                             <OrderCard
                                 key={index + order.id}
                                 totalFiles={order.fileNames.length}
+                                fileIds={order.fileNames}
                                 amount={order.orderAmount}
                                 name={order.userName}
                                 mobileNumber={order.userId}
@@ -110,7 +110,7 @@ const MainScreen: React.FC = () => {
                             />
                         ))
                     ) : (
-                    <OrderShimmer total={5}/>
+                    <Shimmer total={5} type='order'/>
                     )
                 }
             </div>

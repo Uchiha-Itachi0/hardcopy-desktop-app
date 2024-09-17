@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { useAuth } from './hooks/useAuth';
 import LoginScreen from './pages/LoginScreen';
 import MainScreen from './pages/MainScreen';
+import File from "./components/File/File.tsx";
 
 const App: React.FC = () => {
     const { isAuthenticated, isLoading } = useAuth();
@@ -27,6 +28,10 @@ const App: React.FC = () => {
                 <Route
                     path="/content"
                     element={isAuthenticated ? <MainScreen /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="/files"
+                    element={isAuthenticated ? <File /> : <Navigate to="/login" />}
                 />
             </Routes>
         </Router>
